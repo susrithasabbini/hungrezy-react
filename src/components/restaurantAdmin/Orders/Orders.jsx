@@ -99,7 +99,7 @@ const Orders = () => {
   useEffect(() => {
     const fetchStats = async () => {
       const data = await fetchRestaurantOrdersStats(
-        user._id,
+        user?._id,
         statusFilter,
         dateFilter,
         customerFilter
@@ -114,7 +114,7 @@ const Orders = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
-        const data = await fetchRestaurantOrders(user._id, "all", null);
+        const data = await fetchRestaurantOrders(user?._id, "all", null);
         const temp = [];
         setOrders(data);
       }
@@ -125,7 +125,7 @@ const Orders = () => {
   useEffect(() => {
     const uniqueCustomersMap = new Map();
     orders.forEach((order) => {
-      const userIdString = order.userId._id;
+      const userIdString = order.userId?._id;
       if (!uniqueCustomersMap.has(userIdString)) {
         uniqueCustomersMap.set(userIdString, order.userId);
       }
@@ -136,7 +136,7 @@ const Orders = () => {
   const handleUpdateStatus = async (orderId, status) => {
     const result = await updateOrderStatus(orderId, status);
     if (!result) return;
-    const orderIndex = orders.findIndex((order) => order._id === orderId);
+    const orderIndex = orders.findIndex((order) => order?._id === orderId);
     const newOrders = [...orders];
     newOrders[orderIndex].status = status;
     setOrders(newOrders);
@@ -187,7 +187,7 @@ const Orders = () => {
       !statusFilter || statusFilter === order.status || statusFilter === "all";
     const customerCondition =
       !customerFilter ||
-      customerFilter === order.userId._id ||
+      customerFilter === order.userId?._id ||
       customerFilter === "all";
     const orderDate = new Date(order.orderedAt);
     const today = new Date();
@@ -254,7 +254,8 @@ const Orders = () => {
             {stats.mostFrequentFoodItem[0]}
           </p>
           <p className="text-lg font-medium">Frequent Food Item</p>
-        </div>``
+        </div>
+        ``
       </div>
       <div className="flex sm:flex-row flex-col gap-y-5 items-center mt-14 sm:gap-x-5">
         <div className="flex items-center gap-2">
@@ -330,11 +331,11 @@ const Orders = () => {
             {customers &&
               customers.map((customer, id) => (
                 <SelectItem
-                  value={customer._id}
+                  value={customer?._id}
                   className="cursor-pointer"
                   key={id}
                 >
-                  {customer.firstName + " " + customer.lastName}
+                  {customer?.firstName + " " + customer?.lastName}
                 </SelectItem>
               ))}
           </Select>
@@ -353,40 +354,40 @@ const Orders = () => {
         </TableHead>
         <TableBody>
           {filteredOrders.map((order) => (
-            <TableRow key={order._id}>
+            <TableRow key={order?._id}>
               <TableCell>
-                {format(new Date(order.orderedAt), "MMM dd, yyyy, hh:mm:ss a")}
+                {format(new Date(order?.orderedAt), "MMM dd, yyyy, hh:mm:ss a")}
               </TableCell>
-              <TableCell>{order._id}</TableCell>
+              <TableCell>{order?._id}</TableCell>
               <TableCell>
-                {order.userId.firstName + " " + order.userId.lastName}
+                {order.userId?.firstName + " " + order.userId?.lastName}
               </TableCell>
-              <TableCell>&#8377;{order.paymentDetails.amount}</TableCell>
+              <TableCell>&#8377;{order.paymentDetails?.amount}</TableCell>
               <TableCell>
                 <Badge
                   className="px-3 py-1 flex items-center w-28"
                   color={
-                    order.status === "delivered"
+                    order?.status === "delivered"
                       ? "green"
-                      : order.status === "processing"
+                      : order?.status === "processing"
                       ? "yellow"
-                      : order.status === "placed"
+                      : order?.status === "placed"
                       ? "blue"
                       : "red"
                   }
                   icon={
-                    order.status === "delivered"
+                    order?.status === "delivered"
                       ? BadgeCheckIcon
-                      : order.status === "processing"
+                      : order?.status === "processing"
                       ? MdOutlinePending
-                      : order.status === "placed"
+                      : order?.status === "placed"
                       ? MdFoodBank
                       : RxCross2
                   }
                 >
                   <Text>
-                    {order.status.charAt(0).toUpperCase() +
-                      order.status.slice(1)}
+                    {order?.status.charAt(0).toUpperCase() +
+                      order?.status.slice(1)}
                   </Text>
                 </Badge>
               </TableCell>
@@ -394,15 +395,15 @@ const Orders = () => {
               <TableCell className="flex items-center justify-center lg:-ml-14 md:-ml-10">
                 <div className="flex w-fit gap-3">
                   <Link
-                    to={`/restaurant/orders/${order._id}`}
+                    to={`/restaurant/orders/${order?._id}`}
                     className="flex items-center justify-center rounded-md cursor-pointer underline"
                   >
                     <IoEye className="w-5 h-5 text-gray-500" />
                   </Link>
-                  {order.status === "placed" && (
+                  {order?.status === "placed" && (
                     <Badge
                       onClick={() =>
-                        handleUpdateStatus(order._id, "processing")
+                        handleUpdateStatus(order?._id, "processing")
                       }
                       className="px-3 py-1 flex items-center w-28 cursor-pointer hover:scale-105 transition-all"
                       color={"green"}
@@ -411,9 +412,11 @@ const Orders = () => {
                       <Text>Accept</Text>
                     </Badge>
                   )}
-                  {order.status === "processing" && (
+                  {order?.status === "processing" && (
                     <Badge
-                      onClick={() => handleUpdateStatus(order._id, "delivered")}
+                      onClick={() =>
+                        handleUpdateStatus(order?._id, "delivered")
+                      }
                       className="px-3 py-1 flex items-center w-28 cursor-pointer hover:scale-105 transition-all"
                       color={"green"}
                       icon={BadgeCheckIcon}
